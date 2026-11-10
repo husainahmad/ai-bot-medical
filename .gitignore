@@ -22,3 +22,35 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Build output
+target/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vaadin generated frontend
+src/main/frontend/generated/
+src/main/bundles/
+node_modules/
+package.json
+package-lock.json
+tsconfig.json
+types.d.ts
+vite.config.ts
+vite.generated.ts
+
+# Local configuration (may contain secrets)
+src/main/resources/application.yaml

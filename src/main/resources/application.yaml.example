@@ -1,0 +1,50 @@
+vaadin:
+  launch-browser: true
+
+spring:
+  application:
+    name: aibot
+  ai:
+    openai:
+      # Kenari (https://kenari.id) exposes an OpenAI-compatible API.
+      # Key: https://kenari.id  |  Models: https://kenari.id/v1/models
+      # Override any of these with AI_BASE_URL / AI_API_KEY / AI_MODEL.
+      base-url: ${AI_BASE_URL:https://kenari.id/v1}
+      api-key: ${AI_API_KEY:${KENARI_API_KEY:}}
+      chat:
+        completions-path: /chat/completions
+        options:
+          model: ${AI_MODEL:agnes-3-0-flash:free}
+          temperature: 0.2
+  http:
+    client:
+      connect-timeout: 30s
+      read-timeout: 180s
+
+server:
+  port: 8086
+
+app:
+  assistant-name: Medical AI Assistant
+  knowledge-base:
+    enabled: true
+    timeout-seconds: 30
+    pages:
+      - title: ITC Immunity Therapy Center - Clinic Profile
+        url: https://www.placidway.com/profile/5/Alternative-Cancer-Treatment-by-ITC-Immunity-Therapy-Center
+      - title: Alternative Adenocarcinoma Cancer Treatment in Tijuana
+        url: https://www.placidway.com/package/7903/Alternative-Adenocarcinoma-Cancer-Treatment-Package-in-Tijuana-Mexico-by-ITC
+      - title: Alternative Adrenal Cancer Treatment in Tijuana
+        url: https://www.placidway.com/package/7902/Alternative-Adrenal-Cancer-Treatment-Package-in-Tijuana-Mexico-by-ITC
+      - title: Alternative Anal Cancer Treatment in Tijuana
+        url: https://www.placidway.com/package/7901/Alternative-Anal-Cancer-Treatment-Package-in-Tijuana-Mexico-by-ITC
+      - title: ITC Tijuana Videos - Alternative Cancer Treatment
+        url: https://www.placidway.com/profile-videos/5/Alternative-Cancer-Treatment-by-ITC-Immunity-Therapy-Center
+      - title: ITC Immunity Therapy Center - Price List
+        url: https://www.placidway.com/price-list/5/Alternative-Cancer-Treatment-by-ITC-Immunity-Therapy-Center
+      - title: Alternative Medicine Cost Abroad - Compare Prices 2026
+        url: https://www.placidway.com/search-medical-pricings/Alternative-Medicine/All/1
+
+logging:
+  level:
+    com.placidway.aibot: DEBUG
