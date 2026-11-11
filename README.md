@@ -79,9 +79,11 @@ rules, and language rules.
 | Class | Responsibility |
 | --- | --- |
 | `AibotApplication` | Entry point; Vaadin theme, `@Push`, PWA config |
-| `config/ChatConfig` | Builds the `ChatClient`, system prompt, and chat memory |
+| `config/ChatConfig` | Builds the `ChatClient` and chat memory |
+| `config/SystemPromptProvider` | Builds the per-request system prompt from the current knowledge base |
 | `knowledge/KnowledgeBaseProperties` | Binds `app.knowledge-base.*` config |
-| `knowledge/KnowledgeBaseService` | Fetches, extracts, and caches the approved pages |
+| `knowledge/KnowledgeBaseService` | Fetches, caches, and refreshes the approved pages |
+| `web/KnowledgeBaseAdminController` | Manual refresh endpoint |
 | `service/ChatService` | Streaming chat abstraction |
 | `service/SpringAiChatService` | Calls the model and streams chunks |
 | `ui/ChatView` | Chat screen: header, conversation, composer, streaming |
@@ -140,6 +142,17 @@ java -jar target/ai-bot-medical-0.0.1-SNAPSHOT.jar
 ./mvnw test
 ```
 
+### 5. Refresh the knowledge base (optional)
+
+The knowledge base refreshes automatically every day at 03:00. To refresh it
+immediately after the approved pages change:
+
+```bash
+curl -X POST http://localhost:8086/admin/knowledge-base/refresh
+```
+
+See [Refreshing the knowledge base](#refreshing-the-knowledge-base) for details.
+
 ---
 
 ## Configuration
@@ -161,6 +174,8 @@ All settings live in `src/main/resources/application.yaml`.
 | --- | --- | --- |
 | `app.knowledge-base.enabled` | `true` | Turn grounding on/off |
 | `app.knowledge-base.timeout-seconds` | `30` | Per-page fetch timeout |
+| `app.knowledge-base.refresh.enabled` | `true` | Enable scheduled refresh |
+| `app.knowledge-base.refresh.cron` | `0 0 3 * * *` | Refresh schedule (daily 03:00) |
 | `app.knowledge-base.pages[].title` | — | Human-readable page name |
 | `app.knowledge-base.pages[].url` | — | Page to fetch |
 
@@ -193,6 +208,43 @@ app still starts.
 
 To change the sources, edit `app.knowledge-base.pages` and restart.
 
+### Refreshing the knowledge base
+
+The cached content is refreshed in two ways:
+
+- **Scheduled** — daily at 03:00 server time by default
+  (`app.knowledge-base.refresh.cron`). Set `refresh.enabled=false` to disable.
+- **Manual** — call the admin endpoint after the pages change:
+
+```bash
+curl -X POST http://localhost:8086/admin/knowledge-base/refresh
+```
+
+Sample response:
+
+```json
+{
+  "refreshed": true,
+  "loadedPages": 7,
+  "chars": 101257,
+  "lastRefreshedAt": "2026-11-11T03:00:00Z",
+  "refreshing": false
+}
+```
+
+The response reports `refreshed`, `loadedPages`, `chars`, `lastRefreshedAt`,
+and `refreshing`.
+
+Refresh behaviour:
+
+- The system prompt is built per request, so a refresh applies immediately
+  without restarting the app.
+- The cached text is swapped atomically; in-flight requests keep the version
+  they started with.
+- Refreshes are single-flight; a second trigger while one is running is skipped.
+- If every page fails, the previous content is kept instead of leaving the bot
+  empty.
+
 ---
 
 ## Guardrails
@@ -214,13 +266,17 @@ The system prompt enforces:
 ```
 src/main/java/com/placidway/aibot/
 ├── AibotApplication.java
-├── config/ChatConfig.java
+├── config/
+│   ├── ChatConfig.java
+│   └── SystemPromptProvider.java
 ├── knowledge/
 │   ├── KnowledgeBaseProperties.java
 │   └── KnowledgeBaseService.java
 ├── service/
 │   ├── ChatService.java
 │   └── SpringAiChatService.java
+├── web/
+│   └── KnowledgeBaseAdminController.java
 └── ui/
     ├── ChatView.java
     ├── MainLayout.java

@@ -24,7 +24,24 @@ public class KnowledgeBaseProperties {
 
     private int timeoutSeconds = 30;
 
+    private Refresh refresh = new Refresh();
+
     private List<Page> pages = new ArrayList<>();
+
+    /**
+     * Scheduled refresh settings.
+     */
+    @Getter
+    @Setter
+    public static class Refresh {
+
+        private boolean enabled = true;
+
+        /**
+         * Cron expression for the scheduled refresh. Defaults to 03:00 daily.
+         */
+        private String cron = "0 0 3 * * *";
+    }
 
     /**
      * A single knowledge-base page.

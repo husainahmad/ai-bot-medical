@@ -29,6 +29,10 @@ app:
   knowledge-base:
     enabled: true
     timeout-seconds: 30
+    refresh:
+      enabled: true
+      # Daily at 03:00 server time. Set enabled=false to disable scheduling.
+      cron: ${KB_REFRESH_CRON:0 0 3 * * *}
     pages:
       - title: ITC Immunity Therapy Center - Clinic Profile
         url: https://www.placidway.com/profile/5/Alternative-Cancer-Treatment-by-ITC-Immunity-Therapy-Center

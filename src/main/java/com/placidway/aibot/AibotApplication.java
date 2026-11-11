@@ -6,6 +6,7 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Application entry point and Vaadin app shell configuration.
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Husain Harmoni
  */
 @SpringBootApplication
+@EnableScheduling
 @Theme("aibot")
 @Push
 @PWA(
