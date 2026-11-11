@@ -1,11 +1,14 @@
 package com.placidway.aibot.ui.component;
 
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Shortcuts;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.data.value.ValueChangeMode;
 
 /**
  * Message composer bar pinned to the bottom of the chat view.
@@ -42,21 +45,17 @@ public class ChatInput extends HorizontalLayout {
         textArea = new TextArea();
         textArea.setPlaceholder("Type your message...");
         textArea.addClassName("chat-textarea");
+        // Keep the server value in sync on every keystroke so pressing Enter sends
+        // exactly the text the user has typed, just like clicking the send button.
+        textArea.setValueChangeMode(ValueChangeMode.EAGER);
         textArea.setMinHeight("42px");
         textArea.setMaxHeight("120px");
         textArea.setWidthFull();
 
-        // Enter sends; Shift+Enter inserts a newline. Handled on the client so the
-        // default newline can be prevented before it is inserted.
-        textArea.getElement().executeJs("""
-                this.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter' && !event.shiftKey) {
-                        event.preventDefault();
-                        this.dispatchEvent(new CustomEvent('chat-send', { bubbles: true }));
-                    }
-                });
-                """);
-        textArea.getElement().addEventListener("chat-send", event -> sendMessage());
+        // Enter sends, exactly like clicking the send button. Shift+Enter inserts
+        // a newline because the shortcut only matches Enter without modifiers.
+        // Scoped to the text area so Enter elsewhere in the app does not send.
+        Shortcuts.addShortcutListener(this, this::sendMessage, Key.ENTER).listenOn(textArea);
 
         sendButton = new Button(new Icon(VaadinIcon.ARROW_UP));
         sendButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);

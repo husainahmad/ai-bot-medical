@@ -31,7 +31,7 @@ and replies stream into the chat as they are generated.
 | UI | Vaadin 25.3.5 (server-side Java UI, `@Push` for streaming) |
 | AI integration | Spring AI 2.0.1 (`spring-ai-starter-model-openai`) |
 | LLM provider | Kenari (`https://kenari.id/v1`), OpenAI-compatible API |
-| Default model | `agnes-3-0-flash:free` (512k context, tool support, free tier) |
+| Default model | `deepseek-v4-flash` (1M context, tool support) |
 | HTML extraction | jsoup 1.18.3 |
 | Markdown | commonmark 0.24.0 + GFM tables extension |
 | Boilerplate | Lombok |
@@ -41,7 +41,7 @@ and replies stream into the chat as they are generated.
 ### Model notes
 
 The provider is configured through the OpenAI-compatible starter, so any
-OpenAI-compatible endpoint works. The default `agnes-3-0-flash:free` is fast and
+OpenAI-compatible endpoint works. The default `deepseek-v4-flash` is fast and
 follows the grounding rules well. Other free Kenari models with tool support
 include `glm-4-7-flash:free` and `qwen3-8-27b:free`, but those emit reasoning
 tokens and are less reliable for strict refusals. Override with `AI_MODEL`.
@@ -152,7 +152,7 @@ All settings live in `src/main/resources/application.yaml`.
 | --- | --- | --- |
 | `spring.ai.openai.base-url` | `AI_BASE_URL` | `https://kenari.id/v1` |
 | `spring.ai.openai.api-key` | `AI_API_KEY` / `KENARI_API_KEY` | — (required) |
-| `spring.ai.openai.chat.options.model` | `AI_MODEL` | `agnes-3-0-flash:free` |
+| `spring.ai.openai.chat.options.model` | `AI_MODEL` | `deepseek-v4-flash` |
 | `spring.ai.openai.chat.options.temperature` | — | `0.2` |
 
 ### Knowledge base

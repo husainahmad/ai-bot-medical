@@ -14,7 +14,7 @@ spring:
       chat:
         completions-path: /chat/completions
         options:
-          model: ${AI_MODEL:agnes-3-0-flash:free}
+          model: ${AI_MODEL:deepseek-v4-flash}
           temperature: 0.2
   http:
     client:
